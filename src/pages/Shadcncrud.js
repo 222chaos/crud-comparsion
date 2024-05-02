@@ -1,81 +1,77 @@
 import React, { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-
-import { Button } from "@/components/ui/button";
-import { Table } from "@/components/ui/table";
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  TableHead,
+  TableHeader,
+  TableCaption,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog } from "@/components/ui/dialog";
 
-// Define the validation schema using Zod
-const userSchema = z.object({
-  name: z.string().min(1, { message: "Name is required." }),
-  age: z.number().min(18, { message: "Must be at least 18 years old." }),
-});
-
-const ShadcnCrud = () => {
+const ShardsCrud = () => {
   const initialUsers = [
     { id: 1, name: "张三", age: 28 },
     { id: 2, name: "李四", age: 24 },
+    { id: 3, name: "王五", age: 32 },
+    { id: 4, name: "赵六", age: 29 },
+    { id: 5, name: "钱七", age: 26 },
+    { id: 6, name: "孙八", age: 35 },
+    { id: 7, name: "周九", age: 31 },
+    { id: 8, name: "吴十", age: 23 },
+    { id: 9, name: "郑十一", age: 27 },
+    { id: 10, name: "王十二", age: 30 },
+    { id: 11, name: "朱十三", age: 33 },
+    { id: 12, name: "韩十四", age: 25 },
+    { id: 13, name: "李十五", age: 29 },
+    { id: 14, name: "赵十六", age: 31 },
+    { id: 15, name: "钱十七", age: 28 },
+    { id: 16, name: "孙十八", age: 34 },
+    { id: 17, name: "周十九", age: 26 },
+    { id: 18, name: "吴二十", age: 32 },
+    { id: 19, name: "郑二十一", age: 27 },
+    { id: 20, name: "王二十二", age: 30 },
   ];
 
   const [users, setUsers] = useState(initialUsers);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
+  const [editingUser, setEditingUser] = useState({
+    id: null,
+    name: "",
+    age: "",
+  });
   const [searchText, setSearchText] = useState("");
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({
-    resolver: zodResolver(userSchema),
-    defaultValues: {
-      name: "",
-      age: "",
-    },
-  });
-
-  const handleAdd = () => {
-    setEditingUser({ id: users.length + 1, name: "", age: "" });
-    reset({ name: "", age: "" });
-    setIsModalVisible(true);
-  };
-
   const handleEdit = (user) => {
-    setEditingUser(user);
-    reset(user);
-    setIsModalVisible(true);
+    setEditingUser({ ...user });
   };
 
   const handleDelete = (userId) => {
     setUsers(users.filter((user) => user.id !== userId));
   };
 
-  const handleOk = handleSubmit((data) => {
+  const handleOk = () => {
     const updatedUsers =
       editingUser.id > users.length
-        ? [...users, { ...editingUser, ...data }]
+        ? [...users, editingUser]
         : users.map((user) =>
-            user.id === editingUser.id ? { ...user, ...data } : user
+            user.id === editingUser.id ? editingUser : user
           );
     setUsers(updatedUsers);
-    setIsModalVisible(false);
-  });
+  };
 
-  const handleCancel = () => {
-    setIsModalVisible(false);
+  const handleInputChange = (e, key) => {
+    setEditingUser({ ...editingUser, [key]: e.target.value });
   };
 
   const handleSearchChange = (e) => {
@@ -86,86 +82,79 @@ const ShadcnCrud = () => {
     user.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  const columns = [
-    { title: "姓名", dataIndex: "name", key: "name" },
-    { title: "年龄", dataIndex: "age", key: "age" },
-    {
-      title: "操作",
-      key: "action",
-      render: (_, record) => (
-        <>
-          <Button onClick={() => handleEdit(record)} type="link">
-            编辑
-          </Button>
-          <Button onClick={() => handleDelete(record.id)} type="link">
-            删除
-          </Button>
-        </>
-      ),
-    },
-  ];
-
   return (
     <>
-      <Button
-        onClick={handleAdd}
-        type="primary"
-        style={{ marginBottom: 16, marginLeft: 8 }}
-      >
-        添加用户
-      </Button>
-      <Input
-        placeholder="搜索用户"
-        value={searchText}
-        onChange={handleSearchChange}
-        style={{ marginBottom: 16, width: 200 }}
-      />
-      <Table dataSource={filteredUsers} columns={columns} rowKey="id" />
-      <Dialog
-        title={editingUser?.id > users.length ? "添加用户" : "编辑用户"}
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-        <Form>
-          <FormField
-            name="name"
-            render={() => (
-              <FormItem>
-                <FormLabel>姓名</FormLabel>
-                <FormControl>
-                  <Controller
-                    name="name"
-                    control={control}
-                    render={({ field }) => <Input {...field} />}
-                  />
-                </FormControl>
-                <FormDescription>Description for name</FormDescription>
-                <FormMessage>{errors.name?.message}</FormMessage>
-              </FormItem>
-            )}
-          />
-          <FormField
-            name="age"
-            render={() => (
-              <FormItem>
-                <FormLabel>年龄</FormLabel>
-                <FormControl>
-                  <Controller
-                    name="age"
-                    control={control}
-                    render={({ field }) => <Input type="number" {...field} />}
-                  />
-                </FormControl>
-                <FormDescription>Description for age</FormDescription>
-                <FormMessage>{errors.age?.message}</FormMessage>
-              </FormItem>
-            )}
-          />
-        </Form>
-      </Dialog>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <Button
+          onClick={() =>
+            setEditingUser({ id: users.length + 1, name: "", age: "" })
+          }
+        >
+          添加用户
+        </Button>
+        <>&emsp;</>
+        <Input
+          placeholder="搜索用户"
+          value={searchText}
+          onChange={handleSearchChange}
+          style={{ width: 200 }}
+        />
+      </div>
+
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[100px]">姓名</TableHead>
+            <TableHead>年龄</TableHead>
+            <TableHead>操作</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredUsers.map((user) => (
+            <TableRow key={user.id}>
+              <TableCell>{user.name}</TableCell>
+              <TableCell>{user.age}</TableCell>
+              <TableCell>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button onClick={() => handleEdit(user)}>编辑</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>编辑用户</DialogTitle>
+                    </DialogHeader>
+                    <div>
+                      <label>姓名:</label>
+                      <Input
+                        type="text"
+                        value={editingUser.name}
+                        onChange={(e) => handleInputChange(e, "name")}
+                      />
+                      <label>年龄:</label>
+                      <Input
+                        type="number"
+                        value={editingUser.age}
+                        onChange={(e) => handleInputChange(e, "age")}
+                      />
+                    </div>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button onClick={handleOk}>确认</Button>
+                      </DialogClose>
+                      <DialogClose asChild>
+                        <Button>取消</Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+                <Button onClick={() => handleDelete(user.id)}>删除</Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </>
   );
 };
 
-export default ShadcnCrud;
+export default ShardsCrud;
