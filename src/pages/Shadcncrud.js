@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -20,7 +20,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const ShardsCrud = () => {
+const Shadcncrud = () => {
+  useEffect(() => {
+    console.time("shadcn开始时间"); // 开始计时
+
+    // 在这里进行组件加载所需的操作
+
+    console.timeEnd("shadcn结束时间"); // 结束计时并输出结果
+  }, []);
+
   const initialUsers = [
     { id: 1, name: "张三", age: 28 },
     { id: 2, name: "李四", age: 24 },
@@ -157,4 +165,4 @@ const ShardsCrud = () => {
   );
 };
 
-export default ShardsCrud;
+export default Shadcncrud;

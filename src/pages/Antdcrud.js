@@ -1,7 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Table, Modal, Button, Form, Input } from "antd";
 
 const AntdCrud = () => {
+  useEffect(() => {
+    console.time("antd开始时间"); // 开始计时
+
+    console.timeEnd("antd结束时间"); // 结束计时并输出结果
+  }, []);
+
   const initialUsers = [
     { id: 1, name: "张三", age: 28 },
     { id: 2, name: "李四", age: 24 },
